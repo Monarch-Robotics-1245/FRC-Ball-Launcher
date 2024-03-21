@@ -23,8 +23,6 @@ public class Climb extends SubsystemBase {
         climbSolenoid.set(DoubleSolenoid.Value.kReverse);
     }
 
-    public void toggleClimb() {}
-
     public static Value getValue() {
         return climbSolenoid.get();
     }

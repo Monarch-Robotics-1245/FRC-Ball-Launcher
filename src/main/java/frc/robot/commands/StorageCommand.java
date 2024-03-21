@@ -1,12 +1,11 @@
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.IO;
 import frc.robot.subsystems.Storage;
 
-public class StorageCommand extends CommandBase {
+public class StorageCommand extends Command {
     private final XboxController controller;
     private final Storage storage;
 
@@ -21,8 +20,7 @@ public class StorageCommand extends CommandBase {
         if(controller.getYButtonPressed()){
             storage.toggleSpin();
         }
-        //System.out.println(storage.getProx());
-        if(storage.isRunning() && storage.getProx() > 500 && !controller.getYButton())
+        if(storage.isRunning() && !controller.getYButton())
             storage.toggleSpin();
 
     }

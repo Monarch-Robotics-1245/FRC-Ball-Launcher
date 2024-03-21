@@ -1,11 +1,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.Encoder;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import edu.wpi.first.wpilibj.motorcontrol.MotorController;
-import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.commands.IntakeCommand;
 
@@ -19,10 +15,6 @@ public class Intake extends SubsystemBase{
     public Intake() {
         this.motor = new TalonSRX(5);
         setDefaultCommand(new IntakeCommand(this));
-    }
-
-    public void spin(double speed){
-        motor.set(TalonSRXControlMode.PercentOutput, speed);
     }
 
     public void toggleSpin() {

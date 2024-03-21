@@ -2,36 +2,21 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.*;
-import edu.wpi.first.util.sendable.Sendable;
-import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.drive.RobotDriveBase;
 
 import static java.util.Objects.requireNonNull;
 
-public class MonarchMecanumDrive extends RobotDriveBase implements Sendable, AutoCloseable {
+public class MonarchMecanumDrive extends RobotDriveBase {
 
-    private static int instances;
-
-    private CANSparkMax frontLeftMotor;
-    private CANSparkMax frontRightMotor;
-    private CANSparkMax backLeftMotor;
-    private CANSparkMax backRightMotor;
-
-    private RelativeEncoder frontLeftEncoder;
-    private RelativeEncoder frontRightEncoder;
-    private RelativeEncoder backLeftEncoder;
-    private RelativeEncoder backRightEncoder;
-
-    private SparkPIDController frontLeftSparkPID;
-    private SparkPIDController frontRightSparkPID;
-    private SparkPIDController backLeftSparkPID;
-    private SparkPIDController backRightSparkPID;
-
-    private double multiplier = 1.0f;
-
-    private double gyroRotation = 0;
+    private final CANSparkMax frontLeftMotor;
+    private final CANSparkMax frontRightMotor;
+    private final CANSparkMax backLeftMotor;
+    private final CANSparkMax backRightMotor;
+    private final SparkPIDController frontLeftSparkPID;
+    private final SparkPIDController frontRightSparkPID;
+    private final SparkPIDController backLeftSparkPID;
+    private final SparkPIDController backRightSparkPID;
 
     ADXRS450_Gyro gyro = new ADXRS450_Gyro();
 
@@ -52,21 +37,6 @@ public class MonarchMecanumDrive extends RobotDriveBase implements Sendable, Aut
         this.frontRightMotor = frontRight;
         this.backLeftMotor = backLeft;
         this.backRightMotor = backRight;
-
-        frontLeftEncoder = frontLeftMotor.getEncoder();
-        frontRightEncoder = frontRightMotor.getEncoder();
-        backLeftEncoder = backLeftMotor.getEncoder();
-        backRightEncoder = backRightMotor.getEncoder();
-
-        SendableRegistry.addChild(this, this.frontLeftMotor);
-        SendableRegistry.addChild(this, this.frontRightMotor);
-        SendableRegistry.addChild(this, this.backLeftMotor);
-        SendableRegistry.addChild(this, this.backRightMotor);
-
-//        this.frontLeftPID = new PIDController(0.03, 0.02, 0);
-//        this.frontRightPID = new PIDController(0.03, 0.02, 0);
-//        this.backLeftPID = new PIDController(0.03, 0.02, 0);
-//        this.backRightPID = new PIDController(0.03, 0.02, 0);
 
         kP = 0;
         kI = 0;
@@ -110,16 +80,9 @@ public class MonarchMecanumDrive extends RobotDriveBase implements Sendable, Aut
         backRightMotor.setOpenLoopRampRate(0.5);
 
 
-        instances++;
-        SendableRegistry.addLW(this, "MonarchMecanumDrive", instances);
-
     }
 
     //auto rotate field centric driving
-    public void rotationFieldCentricDrive() {
-
-    }
-
     //robot centric driving
     //x is going forward/backward
     //y is going left/right
@@ -134,33 +97,12 @@ public class MonarchMecanumDrive extends RobotDriveBase implements Sendable, Aut
 
         normalize(wheelSpeeds);
 
-        // frontLeftMotor.set(frontLeftPID.calculate(frontLeftEncoder.getVelocity()/5676d ,wheelSpeeds[0]));
-        // frontRightMotor.set(frontLeftPID.calculate(frontRightEncoder.getVelocity()/5676d ,wheelSpeeds[1]));
-        // backLeftMotor.set(frontLeftPID.calculate(backLeftEncoder.getVelocity()/5676d ,wheelSpeeds[2]));
-        // backRightMotor.set(frontLeftPID.calculate(backRightEncoder.getVelocity()/5676d ,wheelSpeeds[3]));
-
-
-//        frontLeftMotor.set(wheelSpeeds[0]);
-//        frontRightMotor.set(wheelSpeeds[1]);
-//        backLeftMotor.set(wheelSpeeds[2]);
-//        backRightMotor.set(wheelSpeeds[3]);
-
         frontLeftSparkPID.setReference(wheelSpeeds[0], CANSparkMax.ControlType.kDutyCycle);
         frontRightSparkPID.setReference(wheelSpeeds[1], CANSparkMax.ControlType.kDutyCycle);
         backLeftSparkPID.setReference(wheelSpeeds[2], CANSparkMax.ControlType.kDutyCycle);
         backRightSparkPID.setReference(wheelSpeeds[3], CANSparkMax.ControlType.kDutyCycle);
 
-
-//
-//        frontLeftMotor.set(wheelSpeeds[0]);
-//        frontRightMotor.set(wheelSpeeds[1]);
-//        backLeftMotor.set(wheelSpeeds[2]);
-//        backRightMotor.set(wheelSpeeds[3]);
-
         feed();
-    }
-
-    public void drive() {
     }
 
     @Override
@@ -175,37 +117,6 @@ public class MonarchMecanumDrive extends RobotDriveBase implements Sendable, Aut
     @Override
     public String getDescription() {
         return "Monarch Mecanum Drive";
-    }
-
-    @Override
-    public void initSendable(SendableBuilder builder) {
-        builder.setSmartDashboardType("MecanumDrive");
-        builder.setActuator(true);
-        builder.setSafeState(this::stopMotor);
-        builder.addDoubleProperty(
-                "Front Left Motor Speed", this.frontLeftMotor::get, this.frontLeftMotor::set);
-        builder.addDoubleProperty(
-                "Front Right Motor Speed",
-                () -> this.frontRightMotor.get(),
-                value -> this.frontRightMotor.set(value));
-        builder.addDoubleProperty("Rear Left Motor Speed", this.backLeftMotor::get, this.backLeftMotor::set);
-        builder.addDoubleProperty(
-                "Rear Right Motor Speed",
-                () -> this.backRightMotor.get(),
-                value -> this.backRightMotor.set(value));
-    }
-
-    public void setMultiplier(double multiplier) {
-        this.multiplier = multiplier;
-    }
-
-    public void resetMultiplier() {
-        this.multiplier = 1;
-    }
-
-    @Override
-    public void close() throws Exception {
-        SendableRegistry.remove(this);
     }
 
 }

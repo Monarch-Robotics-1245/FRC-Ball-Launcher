@@ -1,6 +1,5 @@
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.IO;
@@ -9,14 +8,12 @@ import frc.robot.subsystems.DriveTrain;
 public class DriveCommand extends Command {
     private final DriveTrain driveTrain;
     private final XboxController controller;
-    private final Joystick joystick;
 
 
     public DriveCommand(DriveTrain driveTrainImpl) {
         addRequirements(driveTrainImpl);
         this.driveTrain = driveTrainImpl;
         this.controller = IO.getXboxController();
-        this.joystick = IO.getJoystick();
     }
 
 
